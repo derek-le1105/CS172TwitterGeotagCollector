@@ -1,13 +1,37 @@
-from re import A
-from matplotlib.pyplot import text
+# from re import A
+# from matplotlib.pyplot import text
 import tweepy
 import configparser
 import pandas as pd
+import json
+import re
 
+maxFileSize = 1e+7
 config = configparser.ConfigParser()
 config.read('config.ini')
-
 bearer_token = "AAAAAAAAAAAAAAAAAAAAAHnicAEAAAAANDnnmfkWKi6JI0bPplQs%2B35dj8o%3DxdfVtJx7kfob9G3N4aYjmLR7DWlpXGiShWqxcsY4HsckOBMZMi"
+
+class streamListener(tweepy.StreamingClient):
+    def on_tweet(self, tweet):
+        currDict = {
+            'id': tweet.id,
+            'text': tweet.text,
+            'created_at':tweet.created_at,
+            'links':self.Find(tweet.text),
+            'geo':tweet.geo
+        }
+        jsonObj = json.dumps(currDict, default=str)
+        fp = open('sample.txt','a')
+        print(jsonObj,file=fp)
+        if fp.tell() > maxFileSize:
+            self.disconnect()
+
+    def Find(self, string):    #retrieved from https://www.geeksforgeeks.org/python-check-url-string/
+        # findall() has been used 
+        # with valid conditions for urls in string
+        regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+        url = re.findall(regex,string)      
+        return [x[0] for x in url]
 
 if __name__ == "__main__":
     api_key = config['twitter']['api_key']
@@ -20,21 +44,10 @@ if __name__ == "__main__":
   
     # set access to user's access key and access secret 
     auth.set_access_token(access_token, access_token_secret)
-    
-    # calling the api 
-    api = tweepy.API(auth)
-    tweet_ids = [1460323737035677698, 1293593516040269825, 1293595870563381249]
-    id = 1272771459249844224
-    
-    # fetching the status
-    #status = api.get_status(id)
-    
-    # fetching the text attribute
-    #text = status.text 
-    
-    #print("The text of the status is : \n\n" + text)
-    for ids in tweet_ids:
-        status = api.get_status(ids)
-        text = status.text
-        print(text)
+
+    streaming_client = streamListener(bearer_token)
+    streaming_client.add_rules(tweepy.StreamRule('lang:en -has:media -is:retweet'))
+    streaming_client.filter(tweet_fields=['id', 'text', 'author_id', 'created_at','geo'])
+    #streaming_client.sample(tweepy.StreamRule('-has:media'), tweet_fields=['id', 'text', 'author_id', 'created_at','geo'])
+
     
