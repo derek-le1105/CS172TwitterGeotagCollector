@@ -1,8 +1,11 @@
-from re import A
-from matplotlib.pyplot import text
+# from re import A
+# from matplotlib.pyplot import text
 import tweepy
 import configparser
 import pandas as pd
+import json
+
+maxFileSize = 1e+7
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -31,10 +34,35 @@ if __name__ == "__main__":
     
     # fetching the text attribute
     #text = status.text 
-    
+    queryList = ['Orange County', 'Los Angeles', 'Riverside', 'dog', 'nba', 'met gala', 'johnny depp', 'amber heard']
     #print("The text of the status is : \n\n" + text)
-    for ids in tweet_ids:
-        status = api.get_status(ids)
-        text = status.text
-        print(text)
+    
+    # The method returns a Response object, a named tuple with data, includes,
+    # errors, and meta fields
+    #print(response.meta)
+
+    # In this case, the data field of the Response returned is a list of Tweet
+    # objects
+
+    test = []
+    # Each Tweet object has default ID and text fields
+
+    for query in queryList:
+        #print(query)
+        response = client.search_recent_tweets(query=query, tweet_fields=['geo', 'created_at', 'author_id'], max_results=100)    
+        tweets = response.data
+        for tweet in tweets:
+            #temp = api.get_status(tweet.id)
+            if tweet.geo != None:# or temp.place != None:
+               json_object = json.dumps(tweet.data)
+               print(json_object)
+               test.append(json_object)
+        
+    with open("sample.txt", "w") as outfile:
+        for i in test:
+            outfile.write(i + '\n')
+        print(outfile.tell())
+    # By default, this endpoint/method returns 10 results
+    # You can retrieve up to 100 Tweets by specifying max_results
+    #print(test)
     
