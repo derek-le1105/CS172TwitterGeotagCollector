@@ -5,6 +5,7 @@ import configparser
 import pandas as pd
 import json
 import re
+import os
 
 maxFileSize = 1e+7
 config = configparser.ConfigParser()
@@ -23,7 +24,9 @@ class streamListener(tweepy.StreamingClient):
         jsonObj = json.dumps(currDict, default=str)
         fp = open('sample.txt','a')
         print(jsonObj,file=fp)
-        if fp.tell() > maxFileSize:
+        file_size = os.path.getsize('sample.txt')
+        if file_size > maxFileSize:
+            fp.close()
             self.disconnect()
 
     def Find(self, string):    #retrieved from https://www.geeksforgeeks.org/python-check-url-string/
@@ -42,12 +45,12 @@ if __name__ == "__main__":
     client = tweepy.Client(bearer_token=bearer_token)
     auth = tweepy.OAuthHandler(api_key, api_key_secret)
   
-    # set access to user's access key and access secret 
+    # set access to user's access key and access secretz 
     auth.set_access_token(access_token, access_token_secret)
 
     streaming_client = streamListener(bearer_token)
-    streaming_client.add_rules(tweepy.StreamRule('lang:en -has:media -is:retweet'))
-    streaming_client.filter(tweet_fields=['id', 'text', 'author_id', 'created_at','geo'])
+    #streaming_client.add_rules(tweepy.StreamRule('python lang:en -has:media -is:retweet'))
+    streaming_client.sample(tweet_fields=['id', 'text', 'author_id', 'created_at','geo'])
     #streaming_client.sample(tweepy.StreamRule('-has:media'), tweet_fields=['id', 'text', 'author_id', 'created_at','geo'])
 
     
