@@ -1,8 +1,5 @@
-from re import A
-from matplotlib.pyplot import text
 import tweepy
 import configparser
-import pandas as pd
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -22,19 +19,12 @@ if __name__ == "__main__":
     auth.set_access_token(access_token, access_token_secret)
     
     # calling the api 
-    api = tweepy.API(auth)
-    tweet_ids = [1460323737035677698, 1293593516040269825, 1293595870563381249]
-    id = 1272771459249844224
+    api = tweepy.API(auth, wait_on_rate_limit=True)
     
-    # fetching the status
-    #status = api.get_status(id)
+    place = api.search_geo(query="india", granularity="country")
+    #print(place[0].id)
+
+    new_tweets = []
+    new_tweets = api.search_tweets(q='place:%s' % place[0].id, count=100)
     
-    # fetching the text attribute
-    #text = status.text 
-    
-    #print("The text of the status is : \n\n" + text)
-    for ids in tweet_ids:
-        status = api.get_status(ids)
-        text = status.text
-        print(text)
-    
+    print(new_tweets[0])
