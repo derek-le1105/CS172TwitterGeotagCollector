@@ -8,12 +8,16 @@ import re
 import os
 
 maxFileSize = 1e+7
-config = configparser.ConfigParser()
+config = configparser.ConfigParser(interpolation=None)
 config.read('config.ini')
-bearer_token = "AAAAAAAAAAAAAAAAAAAAAHnicAEAAAAANDnnmfkWKi6JI0bPplQs%2B35dj8o%3DxdfVtJx7kfob9G3N4aYjmLR7DWlpXGiShWqxcsY4HsckOBMZMi"
 
 class streamListener(tweepy.StreamingClient):
     def on_tweet(self, tweet):
+        fp = open('sample.txt','a')
+        if file_size > maxFileSize:
+            fp.close()
+            self.disconnect()
+
         currDict = {
             'id': tweet.id,
             'text': tweet.text,
@@ -21,13 +25,10 @@ class streamListener(tweepy.StreamingClient):
             'links':self.Find(tweet.text),
             'geo':tweet.geo
         }
+
         jsonObj = json.dumps(currDict, default=str)
-        fp = open('sample.txt','a')
         print(jsonObj,file=fp)
         file_size = os.path.getsize('sample.txt')
-        if file_size > maxFileSize:
-            fp.close()
-            self.disconnect()
 
     def Find(self, string):    #retrieved from https://www.geeksforgeeks.org/python-check-url-string/
         # findall() has been used 
@@ -41,16 +42,12 @@ if __name__ == "__main__":
     api_key_secret = config['twitter']['api_key_secret']
     access_token = config['twitter']['access_token']
     access_token_secret = config['twitter']['access_token_secret']
+    bearer_token = config['twitter']['bearer_token']
 
-    client = tweepy.Client(bearer_token=bearer_token)
     auth = tweepy.OAuthHandler(api_key, api_key_secret)
-  
-    # set access to user's access key and access secretz 
     auth.set_access_token(access_token, access_token_secret)
 
     streaming_client = streamListener(bearer_token)
-    #streaming_client.add_rules(tweepy.StreamRule('python lang:en -has:media -is:retweet'))
     streaming_client.sample(tweet_fields=['id', 'text', 'author_id', 'created_at','geo'])
-    #streaming_client.sample(tweepy.StreamRule('-has:media'), tweet_fields=['id', 'text', 'author_id', 'created_at','geo'])
 
     
