@@ -14,6 +14,7 @@ config.read('config.ini')
 class streamListener(tweepy.StreamingClient):
     def on_tweet(self, tweet):
         fp = open('sample.txt','a')
+        file_size = os.path.getsize('sample.txt')
         if file_size > maxFileSize:
             fp.close()
             self.disconnect()
@@ -28,7 +29,7 @@ class streamListener(tweepy.StreamingClient):
 
         jsonObj = json.dumps(currDict, default=str)
         print(jsonObj,file=fp)
-        file_size = os.path.getsize('sample.txt')
+        
 
     def Find(self, string):    #retrieved from https://www.geeksforgeeks.org/python-check-url-string/
         # findall() has been used 
