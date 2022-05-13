@@ -1,5 +1,6 @@
 # from re import A
 # from matplotlib.pyplot import text
+from fileinput import filename
 import tweepy
 import configparser
 import pandas as pd
@@ -8,27 +9,40 @@ import re
 import os
 
 maxFileSize = 1e+7
+maxTotalFileSize = 2e+9
+totalFileSizes = 0
+fileCount = 0
 config = configparser.ConfigParser(interpolation=None)
 config.read('config.ini')
 
 class streamListener(tweepy.StreamingClient):
     def on_tweet(self, tweet):
-        fp = open('sample.txt','a')
-        file_size = os.path.getsize('sample.txt')
+        global totalFileSizes
+        global fileCount
+        
+        currFile = f"sample{fileCount}.txt"
+        fp = open(currFile,'a')
+
+        file_size = os.path.getsize(currFile)
         if file_size > maxFileSize:
             fp.close()
-            self.disconnect()
+            print(f"Closing {currFile}")
+            totalFileSizes += file_size
+            fileCount +=1
+            if totalFileSizes > maxTotalFileSize:
+                self.disconnect()
+                print("2 GB reached")
+        else:
+            currDict = {
+                'id': tweet.id,
+                'text': tweet.text,
+                'created_at':tweet.created_at,
+                'links':self.Find(tweet.text), 
+                'geo':tweet.geo
+            }
 
-        currDict = {
-            'id': tweet.id,
-            'text': tweet.text,
-            'created_at':tweet.created_at,
-            'links':self.Find(tweet.text),
-            'geo':tweet.geo
-        }
-
-        jsonObj = json.dumps(currDict, default=str)
-        print(jsonObj,file=fp)
+            jsonObj = json.dumps(currDict, default=str)
+            print(jsonObj,file=fp)
         
 
     def Find(self, string):    #retrieved from https://www.geeksforgeeks.org/python-check-url-string/
