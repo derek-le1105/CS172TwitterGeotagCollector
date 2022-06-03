@@ -12,6 +12,7 @@ maxFileSize = 1e+7
 maxTotalFileSize = 2e+9
 totalFileSizes = 0
 fileCount = 0
+tweetCount = 0
 config = configparser.ConfigParser(interpolation=None)
 config.read('config.ini')
 
@@ -19,8 +20,9 @@ class streamListener(tweepy.StreamingClient):
     def on_tweet(self, tweet):
         global totalFileSizes
         global fileCount
+        global tweetCount
         
-        currFile = f"sample{fileCount}.txt"
+        currFile = f"samplexdxd.txt"#{fileCount}.txt"
         fp = open(currFile,'a')
 
         file_size = os.path.getsize(currFile)
@@ -40,9 +42,9 @@ class streamListener(tweepy.StreamingClient):
                 'links':self.Find(tweet.text), 
                 'geo':tweet.geo
             }
-
+            tweetCount += 1
             jsonObj = json.dumps(currDict, default=str)
-            print(jsonObj,file=fp)
+            print(f'[{tweetCount}, {jsonObj}]',file=fp)
         
 
     def Find(self, string):    #retrieved from https://www.geeksforgeeks.org/python-check-url-string/
