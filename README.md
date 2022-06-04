@@ -6,4 +6,4 @@ $ export FLASK_APP=hello
 $ flask run
 
 How to Run HTML Front End:
-Double click the html file or download the live server VSCode extension and right click it
+* Double click the html file or download the live server VSCode extension and right click it
