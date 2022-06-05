@@ -24,10 +24,10 @@ def get_data_from_text_file(self):
     return [l.strip() for l in open(str(self), encoding="utf8", errors='ignore')]
 
 # call the function to get the string data containing docs
-docs = get_data_from_text_file("data.txt")
+docs = get_data_from_text_file("Sample Data/sample0.txt")
 
 # print the length of the documents in the string
-print ("String docs length:", len(docs))
+#print ("String docs length:", len(docs))
 
 # define an empty list for the Elasticsearch docs
 doc_list = []
@@ -57,7 +57,7 @@ for num, doc in enumerate(docs):
     # print the errors
         print ("ERROR for num:", num, "-- JSONDecodeError:", err, "for doc:", doc)
 
-print ("Dict docs length:", len(doc_list))
+#print ("Dict docs length:", len(doc_list))
 
 # attempt to index the dictionary entries using the helpers.bulk() method
 try:
@@ -86,8 +86,8 @@ except Exception as err:
 query_all = {
     'size' : 10_000,
     'query': {
-        'match' : {
-            "content": "sanitizer"
+        "query_string" : {
+            "query" : "jajaja"
         }
     }
 }
