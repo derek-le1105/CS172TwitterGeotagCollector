@@ -1,60 +1,41 @@
 // Global Variables
-var tweetIDs = [];
 var tweets = [];
-let searchString = "";
-var timer;
 const tweetContainer = document.getElementById('tweet-container');
-const checkBox = document.getElementById("pauseBox");
 const searchBar = document.getElementById("searchBar");
-const url = "http://ec2-18-209-247-77.compute-1.amazonaws.com:3000/feed/random?q=weather"; // specify a url, in this case our web server
-
+const url = "http://127.0.0.1:5000/getData"; // specify a url, in this case our web server
 
 // Fetch first set of tweets
 function getTweets() {
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {  
-            for(let i=0; i < data.statuses.length; ++i) {
-                tweets.push(data.statuses[i]);
-            }
-
-            refreshTweets();
+    fetch(url, {
+        method: 'POST',
+        mode: 'cors', // this cannot be 'no-cors'
+        headers: {'Content-Type': 'application/json'}, //NOT SURE ABOUT THIS PART
+        body: JSON.stringify({
+            dataToFetch: searchBar.value
         })
-        .catch(err => {
-            // error catching
-            console.log(err);
-        }) 
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        for(let i=0; i < data.statuses.length; ++i) {
+            tweets.push(data.statuses[i]);
+        }
+
+        showTweetsTweets();
+    })
+    .catch(err => {
+        // error catching
+        console.log(err);
+    }) 
 }
 
-
-// Remove duplicates in tweets array
-function removeDuplicates() {
-    let i = 0;
-
-    while (i < tweets.length) {
-        if (!tweetIDs.includes(tweets[i].id)) {
-            tweetIDs.push(tweets[i].id);
-        }
-        else {
-            tweets.splice(i,1);
-        }
-        
-        i++;
-    }
-}
-
-
-// Listens to see if characters are added to search bar which then uses that to filter tweets
-searchBar.addEventListener('input', (event) => {
-    //searchString = event.target.value.trim().toLowerCase();
-    searchString = searchBar.value;
-    filteredResult = tweets.filter(tweet_list => tweet_list.text.search(searchString) != -1);
-
+// Show tweets that were queried
+function showTweets() {
     while (tweetContainer.firstChild) {
         tweetContainer.removeChild(tweetContainer.firstChild);
     }
 
-    filteredResult.forEach(tweetObject => {
+    tweets.forEach(tweetObject => {
         // e.g. create a div holding tweet content
         const singleTweetContainer = document.createElement("div");
         singleTweetContainer.classList.add("tweets");
@@ -88,8 +69,4 @@ searchBar.addEventListener('input', (event) => {
         // finally append your tweet into the tweet list
         tweetContainer.appendChild(singleTweetContainer);
     });
-});
-
-
-// Initialize by getting first set of tweets
-getTweets(); 
+}
