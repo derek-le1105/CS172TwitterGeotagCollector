@@ -17,11 +17,11 @@ function getTweets() {
     .then(res => res.json())
     .then(data => {
         console.log(data);
-        for(let i=0; i < data.statuses.length; ++i) {
-            tweets.push(data.statuses[i]);
+        for(let i=0; i < data.hits.hits.length; ++i) {
+            tweets.push(data.hits.hits[i]);
         }
 
-        showTweetsTweets();
+        showTweets();
     })
     .catch(err => {
         // error catching
@@ -35,34 +35,20 @@ function showTweets() {
         tweetContainer.removeChild(tweetContainer.firstChild);
     }
 
+    console.log(tweets)
     tweets.forEach(tweetObject => {
         // e.g. create a div holding tweet content
         const singleTweetContainer = document.createElement("div");
         singleTweetContainer.classList.add("tweets");
 
-        let tweetProfilePic = document.createElement('img');
-        tweetProfilePic.src = tweetObject.user.profile_image_url;
-        tweetProfilePic.classList.add("tweet-picture-class");
-
-        let tweetName = document.createElement("b");
-        tweetName.textContent = tweetObject.user.name;
-        tweetName.classList.add("tweet-name-class");
-
-        let tweetUserName = document.createElement("b");
-        tweetUserName.textContent = " @" + tweetObject.user.screen_name;
-        tweetUserName.classList.add("tweet-username-class");
-
         let tweetDate = document.createElement("b");
-        tweetDate.textContent = " " + tweetObject.user.created_at;
+        tweetDate.textContent = tweetObject._source.created_at;
         tweetDate.classList.add("tweet-username-class");
 
         let tweetText = document.createElement("p");
-        tweetText.textContent = tweetObject.text;
+        tweetText.textContent = tweetObject._source.text;
 
         // append the text node to the div
-        singleTweetContainer.appendChild(tweetProfilePic);
-        singleTweetContainer.appendChild(tweetName);
-        singleTweetContainer.appendChild(tweetUserName);
         singleTweetContainer.appendChild(tweetDate);
         singleTweetContainer.appendChild(tweetText);
 
