@@ -1,5 +1,0 @@
-{"str field": "They finished building the road they knew no one would ever use.", "int field": 12345, "bool field": True}
-{"str field": "The tumbleweed refused to tumble but was more than willing to prance.", "int field": 42, "bool field": False}
-{"str field": "The hand  was actually clear glue.", "int field": 3856452, "bool field": True}
-{"str field": "Jason didn’t understand why his parents wouldn’t let him sell his little sister at the garage sale.", "int field": 11111, "bool field": False}
-{"str field": "The virus had powers none of us knew existed.", "int field": 54321, "bool field": True}
