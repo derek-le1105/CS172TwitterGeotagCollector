@@ -4,6 +4,11 @@ const tweetContainer = document.getElementById('tweet-container');
 const searchBar = document.getElementById("searchBar");
 const url = "http://127.0.0.1:5000/getData"; // specify a url, in this case our web server
 
+function enterKeyPressed(event){
+    if(event.key === "Enter"){
+        getTweets()
+    }
+}
 // Fetch first set of tweets
 function getTweets() {
     fetch(url, {
