@@ -17,6 +17,7 @@ function getTweets() {
     .then(res => res.json())
     .then(data => {
         console.log(data);
+        tweets = []
         for(let i=0; i < data.hits.hits.length; ++i) {
             tweets.push(data.hits.hits[i]);
         }
